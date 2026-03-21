@@ -22,20 +22,29 @@
 - Components must use Radix UI primitives via shadcn/ui for accessibility compliance.
 - React Compiler handles memoization — do not use manual `useMemo` / `useCallback` unless profiling proves necessity.
 
-## 3. Security rules
+## 3. Folder structure rules
+
+- `app/` is routing only — no components, no business logic. Use route groups `(auth)` and `(dashboard)`.
+- `components/ui/` is atoms (shadcn owns this). `components/composed/` is shared molecules/organisms. `components/<feature>/` is feature-scoped.
+- `schemas/` is top-level — everything depends on schemas, schemas depend on nothing.
+- `hooks/`, `services/`, `stores/` are flat. Split by domain only when a folder exceeds ~15 files.
+- No components colocated inside `app/`.
+- Full structure documented in `specs/folder-structure/spec.md`.
+
+## 4. Security rules
 
 - No PII or sensitive health data in logs, error messages, or client-side storage.
 - Health data must only be displayed to the authenticated user who owns it.
 - Treat all health data as sensitive — follow privacy-first practices for rendering and caching.
 
-## 4. Code standards
+## 5. Code standards
 
 - All markdown files in English.
 - No code comments unless explicitly requested.
 - Prettier + prettier-plugin-tailwindcss enforces formatting.
 - ESLint with next config enforces code quality.
 
-## 5. Spec-kit workflow
+## 6. Spec-kit workflow
 
 - Every non-trivial feature must have a spec before implementation.
 - Specs live in `specs/<feature-name>/` with: `research.md`, `spec.md`, `plan.md`, `tasks.md`.
