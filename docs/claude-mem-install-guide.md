@@ -1,128 +1,128 @@
-# claude-mem - Guia de Instalacion y Troubleshooting
+# claude-mem - Installation and Troubleshooting Guide
 
-## Que es claude-mem
+## What is claude-mem
 
-Plugin de memoria persistente para Claude Code que preserva contexto entre sesiones. Usa un worker local (Bun + ChromaDB) para almacenar observaciones, sesiones y prompts.
+Persistent memory plugin for Claude Code that preserves context between sessions. Uses a local worker (Bun + ChromaDB) to store observations, sessions, and prompts.
 
 - Repo: https://github.com/thedotmack/claude-mem
-- Version instalada: 10.6.1
+- Installed version: 10.6.1
 - Scope: project (healthnova-web)
 
-## Instalacion
+## Installation
 
 ```bash
-# 1. Agregar marketplace
+# 1. Add marketplace
 /plugin marketplace add thedotmack/claude-mem
 
-# 2. Instalar plugin
+# 2. Install plugin
 /plugin install claude-mem
 
-# 3. Recargar plugins
+# 3. Reload plugins
 /reload-plugins
 ```
 
-Al instalar, el hook `smart-install.js` auto-instala:
-- **Bun** (runtime JS) en `~/.bun/bin/bun`
-- **uv** (package manager Python) para ChromaDB
-- Dependencias del plugin via `bun install`
+On install, the `smart-install.js` hook auto-installs:
+- **Bun** (JS runtime) at `~/.bun/bin/bun`
+- **uv** (Python package manager) for ChromaDB
+- Plugin dependencies via `bun install`
 
-## Estructura de archivos
+## File Structure
 
 ```
 ~/.claude/plugins/
-├── installed_plugins.json          # Registro de plugins instalados
-├── cache/thedotmack/claude-mem/10.6.1/  # Plugin cacheado
-│   ├── .mcp.json                   # Config MCP server
-│   ├── hooks/hooks.json            # Hooks del plugin
+├── installed_plugins.json
+├── cache/thedotmack/claude-mem/10.6.1/
+│   ├── .mcp.json
+│   ├── hooks/hooks.json
 │   ├── scripts/
-│   │   ├── bun-runner.js           # Wrapper para encontrar bun
-│   │   ├── smart-install.js        # Auto-instalador de dependencias
-│   │   ├── worker-service.cjs      # Worker principal (bundleado)
-│   │   ├── worker-wrapper.cjs      # Wrapper del worker daemon
-│   │   ├── worker-cli.js           # CLI para start/stop/restart/status
-│   │   ├── mcp-server.cjs          # Servidor MCP para search
-│   │   └── context-generator.cjs   # Generador de contexto
-│   └── skills/                     # Skills disponibles
+│   │   ├── bun-runner.js
+│   │   ├── smart-install.js
+│   │   ├── worker-service.cjs
+│   │   ├── worker-wrapper.cjs
+│   │   ├── worker-cli.js
+│   │   ├── mcp-server.cjs
+│   │   └── context-generator.cjs
+│   └── skills/
 │       ├── mem-search/
 │       ├── timeline-report/
 │       ├── make-plan/
 │       ├── do/
 │       └── smart-explore/
-└── data/claude-mem-thedotmack/     # Datos del plugin
+└── data/claude-mem-thedotmack/
 
 ~/.claude-mem/
-├── settings.json       # Configuracion principal
-├── supervisor.json     # Estado del worker (PID, etc)
-└── logs/               # Logs diarios
+├── settings.json
+├── supervisor.json
+└── logs/
 ```
 
-## Configuracion (~/.claude-mem/settings.json)
+## Configuration (~/.claude-mem/settings.json)
 
-Principales opciones:
+Main options:
 
-| Variable | Default | Descripcion |
+| Variable | Default | Description |
 |----------|---------|-------------|
-| `CLAUDE_MEM_MODEL` | `claude-sonnet-4-5` | Modelo AI para procesamiento |
-| `CLAUDE_MEM_WORKER_PORT` | `37777` | Puerto del worker HTTP |
-| `CLAUDE_MEM_WORKER_HOST` | `127.0.0.1` | Host del worker |
-| `CLAUDE_MEM_PROVIDER` | `claude` | Proveedor AI (claude/gemini/openrouter) |
-| `CLAUDE_MEM_CLAUDE_AUTH_METHOD` | `cli` | Metodo de autenticacion |
-| `CLAUDE_MEM_DATA_DIR` | `~/.claude-mem` | Directorio de datos |
-| `CLAUDE_MEM_LOG_LEVEL` | `INFO` | Nivel de log |
-| `CLAUDE_MEM_CHROMA_ENABLED` | `true` | ChromaDB habilitado |
-| `CLAUDE_MEM_CHROMA_PORT` | `8000` | Puerto ChromaDB |
+| `CLAUDE_MEM_MODEL` | `claude-sonnet-4-5` | AI model for processing |
+| `CLAUDE_MEM_WORKER_PORT` | `37777` | Worker HTTP port |
+| `CLAUDE_MEM_WORKER_HOST` | `127.0.0.1` | Worker host |
+| `CLAUDE_MEM_PROVIDER` | `claude` | AI provider (claude/gemini/openrouter) |
+| `CLAUDE_MEM_CLAUDE_AUTH_METHOD` | `cli` | Authentication method |
+| `CLAUDE_MEM_DATA_DIR` | `~/.claude-mem` | Data directory |
+| `CLAUDE_MEM_LOG_LEVEL` | `INFO` | Log level |
+| `CLAUDE_MEM_CHROMA_ENABLED` | `true` | ChromaDB enabled |
+| `CLAUDE_MEM_CHROMA_PORT` | `8000` | ChromaDB port |
 
-## Hooks registrados
+## Registered Hooks
 
-El plugin registra hooks en estas etapas:
+The plugin registers hooks at these stages:
 
-| Hook | Accion |
+| Hook | Action |
 |------|--------|
-| **Setup** | Ejecuta `setup.sh` (no existe en v10.6.1) |
+| **Setup** | Runs `setup.sh` (does not exist in v10.6.1) |
 | **SessionStart** | smart-install, worker start, context hook |
 | **UserPromptSubmit** | session-init hook |
-| **PostToolUse** | observation hook (guarda lo que hace Claude) |
+| **PostToolUse** | observation hook (saves what Claude does) |
 | **Stop** | summarize hook |
 | **SessionEnd** | session-complete hook |
 
-## Skills disponibles
+## Available Skills
 
-- `/claude-mem:mem-search` - Buscar en memoria persistente
-- `/claude-mem:timeline-report` - Reporte narrativo del historial
-- `/claude-mem:make-plan` - Crear plan de implementacion
-- `/claude-mem:do` - Ejecutar plan con subagentes
-- `/claude-mem:smart-explore` - Busqueda estructural con tree-sitter
+- `/claude-mem:mem-search` - Search persistent memory
+- `/claude-mem:timeline-report` - Narrative history report
+- `/claude-mem:make-plan` - Create implementation plan
+- `/claude-mem:do` - Execute plan with subagents
+- `/claude-mem:smart-explore` - Structural search with tree-sitter
 
-## MCP Tools disponibles
+## Available MCP Tools
 
-- `search` - Buscar observaciones por query/filtros
-- `get_observations` - Obtener detalles completos por IDs
-- `timeline` - Contexto temporal alrededor de un punto
-- `smart_search` - Busqueda inteligente
-- `smart_outline` - Outline de codigo
-- `smart_unfold` - Desplegar detalles de codigo
+- `search` - Search observations by query/filters
+- `get_observations` - Get full details by IDs
+- `timeline` - Temporal context around a point
+- `smart_search` - Intelligent search
+- `smart_outline` - Code outline
+- `smart_unfold` - Unfold code details
 
-## Bug conocido: __dirname hardcodeado (Issue #1433)
+## Known Bug: Hardcoded __dirname (Issue #1433)
 
-### Sintomas
-- Worker arranca y `/health` responde OK
-- Todos los demas endpoints devuelven: `"Database is still initializing, please retry"` indefinidamente
-- Log muestra: `"Background initialization failed Critical: code.json mode file missing"`
+### Symptoms
+- Worker starts and `/health` responds OK
+- All other endpoints return: `"Database is still initializing, please retry"` indefinitely
+- Log shows: `"Background initialization failed Critical: code.json mode file missing"`
 
-### Causa raiz
-`worker-service.cjs` contiene 3 rutas hardcodeadas del developer original:
+### Root Cause
+`worker-service.cjs` contains 3 hardcoded paths from the original developer:
 
 ```
-Linea 7472:  var __dirname = "/Users/alexnewman/conductor/.../src/shared"
-Linea 43681: var __dirname = "/Users/alexnewman/conductor/.../src/services/server"
-Linea 68282: var __dirname = "/Users/alexnewman/conductor/.../src/services"
+Line 7472:  var __dirname = "/Users/alexnewman/conductor/.../src/shared"
+Line 43681: var __dirname = "/Users/alexnewman/conductor/.../src/services/server"
+Line 68282: var __dirname = "/Users/alexnewman/conductor/.../src/services"
 ```
 
-El fallback dinamico (`import.meta.url`) nunca se ejecuta porque `typeof __dirname !== "undefined"` siempre es true.
+The dynamic fallback (`import.meta.url`) never executes because `typeof __dirname !== "undefined"` is always true.
 
 ### Fix
 
-Parchear las 3 lineas a `undefined` para activar el fallback:
+Patch all 3 lines to `undefined` to activate the fallback:
 
 ```bash
 FILE="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-service.cjs"
@@ -130,49 +130,49 @@ FILE="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-se
 # Backup
 cp "$FILE" "$FILE.bak"
 
-# Patch linea 7472
+# Patch line 7472
 sed -i '' \
   's|var __dirname = "/Users/alexnewman/conductor/workspaces/claude-mem/banjul/src/shared"|var __dirname = undefined|' \
   "$FILE"
 
-# Patch linea 43681
+# Patch line 43681
 sed -i '' \
   's|var __dirname = "/Users/alexnewman/conductor/workspaces/claude-mem/banjul/src/services/server"|var __dirname = undefined|' \
   "$FILE"
 
-# Patch linea 68282
+# Patch line 68282
 sed -i '' \
   's|var __dirname = "/Users/alexnewman/conductor/workspaces/claude-mem/banjul/src/services", __filename = "/Users/alexnewman/conductor/workspaces/claude-mem/banjul/src/services/worker-service.ts"|var __dirname = undefined, __filename = undefined|' \
   "$FILE"
 ```
 
-### Verificacion
+### Verification
 
 ```bash
-# Confirmar que las 3 lineas fueron parcheadas
+# Confirm all 3 lines were patched
 grep -n 'var __dirname' "$FILE"
-# Debe mostrar: undefined en las 3 lineas
+# Should show: undefined on all 3 lines
 
-# Arrancar worker
+# Start worker
 PATH="$HOME/.bun/bin:$PATH" \
 CLAUDE_PLUGIN_ROOT="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1" \
 nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-wrapper.cjs" > /dev/null 2>&1 &
 
-# Esperar 8 segundos y verificar
+# Wait 8 seconds and verify
 sleep 8
 curl -s http://127.0.0.1:37777/health
-# Debe devolver: {"status":"ok",...}
+# Should return: {"status":"ok",...}
 
 curl -s "http://127.0.0.1:37777/api/search?query=test&limit=5"
-# Debe devolver resultados o "No results found" (NO "Database is still initializing")
+# Should return results or "No results found" (NOT "Database is still initializing")
 ```
 
-## Problema secundario: Worker no arranca automaticamente
+## Secondary Issue: Worker Does Not Auto-Start
 
-Los hooks ejecutan `bun-runner.js` con `node`, que busca `bun` en PATH y en `~/.bun/bin/bun`. Si Bun se acaba de instalar y no se ha reiniciado la terminal, el hook falla silenciosamente con `"Failed to start worker"`.
+The hooks run `bun-runner.js` with `node`, which looks for `bun` in PATH and at `~/.bun/bin/bun`. If Bun was just installed and the terminal hasn't been restarted, the hook silently fails with `"Failed to start worker"`.
 
-### Solucion temporal
-Arrancar manualmente:
+### Temporary Solution
+Start manually:
 
 ```bash
 PATH="$HOME/.bun/bin:$PATH" \
@@ -180,18 +180,18 @@ CLAUDE_PLUGIN_ROOT="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1" \
 nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-wrapper.cjs" > /dev/null 2>&1 &
 ```
 
-### Solucion permanente
-Asegurar que `~/.bun/bin` este en PATH en `.zshrc` / `.bashrc`:
+### Permanent Solution
+Ensure `~/.bun/bin` is in PATH in `.zshrc` / `.bashrc`:
 
 ```bash
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 ```
 
-## Notas importantes
+## Important Notes
 
-- El patch se pierde si se actualiza el plugin (`/plugin update claude-mem`) — hay que reaplicarlo
-- El issue #1433 documenta el bug: https://github.com/thedotmack/claude-mem/issues/1433
-- La API del worker es GET en `/api/search?query=<text>&limit=<n>` (no POST, no `q=`)
-- El supervisor guarda el PID del worker en `~/.claude-mem/supervisor.json`
-- Logs diarios en `~/.claude-mem/logs/claude-mem-YYYY-MM-DD.log`
+- The patch is lost if the plugin is updated (`/plugin update claude-mem`) — it must be reapplied
+- Issue #1433 documents the bug: https://github.com/thedotmack/claude-mem/issues/1433
+- The worker API is GET at `/api/search?query=<text>&limit=<n>` (not POST, not `q=`)
+- The supervisor stores the worker PID in `~/.claude-mem/supervisor.json`
+- Daily logs at `~/.claude-mem/logs/claude-mem-YYYY-MM-DD.log`
