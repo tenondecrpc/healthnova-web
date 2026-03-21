@@ -17,19 +17,25 @@
 
 ## 2. Architecture rules
 
-- The frontend consumes an external backend API. There is no database in this project.
+- The frontend consumes an external REST API authenticated via Cognito JWT tokens. There is no database in this project.
 - Zod schemas are the source of truth for data contracts, form validation, and API response validation.
 - Components must use Radix UI primitives via shadcn/ui for accessibility compliance.
 - React Compiler handles memoization — do not use manual `useMemo` / `useCallback` unless profiling proves necessity.
 
-## 3. Code standards
+## 3. Security rules
+
+- No PII or sensitive health data in logs, error messages, or client-side storage.
+- Health data must only be displayed to the authenticated user who owns it.
+- Treat all health data as sensitive — follow privacy-first practices for rendering and caching.
+
+## 4. Code standards
 
 - All markdown files in English.
 - No code comments unless explicitly requested.
 - Prettier + prettier-plugin-tailwindcss enforces formatting.
 - ESLint with next config enforces code quality.
 
-## 4. Spec-kit workflow
+## 5. Spec-kit workflow
 
 - Every non-trivial feature must have a spec before implementation.
 - Specs live in `specs/<feature-name>/` with: `research.md`, `spec.md`, `plan.md`, `tasks.md`.
