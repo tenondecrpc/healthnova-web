@@ -32,7 +32,7 @@ devcontainer exec --workspace-folder . bash  # shell into container
 - **Single container, zero orchestration**: No services to coordinate — the project only needs Node.js, CLI tools, and network access to remote APIs.
 - **IDE integration**: VS Code (and Codespaces) auto-detects `.devcontainer/`, installs extensions, applies settings, and opens a ready-to-code workspace.
 - **Lifecycle hooks**: `postCreateCommand` (npm install) and `postStartCommand` (firewall init) run automatically — no manual setup steps after cloning.
-- **Credential forwarding**: Bind-mounts for `~/.claude` and `~/.aws` share host credentials without baking secrets into the image.
+- **Credential forwarding**: Bind-mounts for `~/.claude` (settings + credentials only) and `~/.aws` share host credentials without baking secrets into the image. Plugins are isolated per environment to avoid path conflicts between host and container.
 - **Portable**: Works identically on macOS (Docker Desktop), Linux, and in cloud environments (Codespaces, DevPod).
 - **Spec-driven**: The `devcontainer.json` format is an open standard, not tied to a single vendor.
 
@@ -73,7 +73,8 @@ docker build -t healthnova-dev .devcontainer/
 docker run -it --cap-add=NET_ADMIN -p 3000:3000 \
   -v $(pwd):/workspace \
   -v ~/.aws:/home/node/.aws \
-  -v ~/.claude:/home/node/.claude \
+  -v ~/.claude/settings.json:/home/node/.claude/settings.json \
+  -v ~/.claude/credentials.json:/home/node/.claude/credentials.json \
   healthnova-dev
 ```
 

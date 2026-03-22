@@ -10,10 +10,13 @@ permissions:
 
 jobs:
   security-review:
+    # NOTE: Requires prepaid API credits at platform.claude.com.
+    # The CLAUDE_API_KEY secret uses the Anthropic API (not Claude Pro/Max subscription).
+    # If credit balance is $0 this job will fail with "Credit balance too low".
     name: Claude Security Review
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 2
@@ -31,7 +34,7 @@ jobs:
     name: Secret Scanning (Gitleaks)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
