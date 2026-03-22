@@ -44,7 +44,13 @@
 - Prettier + prettier-plugin-tailwindcss enforces formatting.
 - ESLint with next config enforces code quality.
 
-## 6. Spec-kit workflow
+## 6. Testing
+
+- Every feature spec must include test tasks in `tasks.md`.
+- Tests live in a dedicated `tests/` directory at the project root, mirroring the `src/` structure.
+- Tests must not contain PII or sensitive health data in fixtures or mocks.
+
+## 7. Spec-kit workflow
 
 - Every non-trivial feature must have a spec before implementation.
 - Specs live in `specs/<feature-name>/` with: `research.md`, `spec.md`, `plan.md`, `tasks.md`.
