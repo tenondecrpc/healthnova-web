@@ -36,6 +36,7 @@ Configure Vitest + React Testing Library as the unit/component testing framework
 - Tests SHALL NOT import or test async Server Components directly (per Next.js 16 limitation — use E2E for those).
 - Tests SHALL NOT contain PII or sensitive health data in fixtures or mocks.
 - Mock data SHALL use obviously fake values (e.g., "Jane Doe", "test@example.com").
+- Environment variable tests SHALL validate existence and format, never exact values.
 
 ### Test helpers
 
