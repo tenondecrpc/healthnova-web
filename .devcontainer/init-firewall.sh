@@ -13,6 +13,8 @@ APPROVED_DOMAINS=(
   # Claude / Anthropic
   "api.anthropic.com"
   "claude.ai"
+  "statsig.anthropic.com"
+  "statsig.com"
   "sentry.io"
   # AWS — Auth & Identity
   "cognito-idp.us-east-1.amazonaws.com"
@@ -56,9 +58,25 @@ echo "Initializing firewall..."
 ipset create approved_ips hash:ip -exist
 ipset flush approved_ips
 
+# Resolve a domain to IPs using multiple methods for better coverage
+resolve_domain() {
+  local domain="$1"
+  {
+    dig +short "$domain" A 2>/dev/null
+    dig +short "$domain" AAAA 2>/dev/null
+    getent ahosts "$domain" 2>/dev/null | awk '{print $1}'
+    # Follow CNAMEs one level deep (common with CDNs)
+    local cname
+    cname=$(dig +short "$domain" CNAME 2>/dev/null | head -1)
+    if [ -n "$cname" ]; then
+      dig +short "$cname" A 2>/dev/null
+    fi
+  } | grep -E '^[0-9]+\.' | sort -u || true
+}
+
 # Resolve approved domains and add to ipset
 for domain in "${APPROVED_DOMAINS[@]}"; do
-  ips=$(dig +short "$domain" A 2>/dev/null | grep -E '^[0-9]+\.' || true)
+  ips=$(resolve_domain "$domain")
   for ip in $ips; do
     ipset add approved_ips "$ip" -exist
   done
@@ -112,8 +130,25 @@ iptables -P OUTPUT DROP
 
 echo "Firewall initialized. Approved ${#APPROVED_DOMAINS[@]} domains."
 
-# Verify connectivity
-if curl -sf --max-time 5 https://api.anthropic.com > /dev/null 2>&1; then
+# Verify connectivity — retry with fresh DNS if first attempt fails
+verify_and_fix() {
+  local domain="$1"
+  # Use --head and ignore HTTP status — we only care about network/TLS reachability
+  if curl -so /dev/null --max-time 5 "https://${domain}" 2>/dev/null; then
+    return 0
+  fi
+  # Connection failed — the CDN likely returned a different IP.
+  # Re-resolve and add any new IPs, then retry.
+  echo "  Re-resolving ${domain}..."
+  local ips
+  ips=$(resolve_domain "$domain")
+  for ip in $ips; do
+    ipset add approved_ips "$ip" -exist
+  done
+  curl -so /dev/null --max-time 5 "https://${domain}" 2>/dev/null
+}
+
+if verify_and_fix "api.anthropic.com"; then
   echo "Verified: Anthropic API reachable"
 else
   echo "Warning: Anthropic API not reachable — check firewall rules"

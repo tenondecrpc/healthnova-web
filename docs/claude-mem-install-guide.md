@@ -5,7 +5,7 @@
 Persistent memory plugin for Claude Code that preserves context between sessions. Uses a local worker (Bun + ChromaDB) to store observations, sessions, and prompts.
 
 - Repo: https://github.com/thedotmack/claude-mem
-- Installed version: 10.6.1
+- Installed version: 10.6.2
 - Scope: project (healthnova-web)
 
 ## Installation
@@ -19,6 +19,9 @@ Persistent memory plugin for Claude Code that preserves context between sessions
 
 # 3. Reload plugins
 /reload-plugins
+
+# Update to latest version
+/plugin update claude-mem
 ```
 
 On install, the `smart-install.js` hook auto-installs:
@@ -32,7 +35,7 @@ On install, the `smart-install.js` hook auto-installs:
 ```
 ~/.claude/plugins/
 ├── installed_plugins.json
-├── cache/thedotmack/claude-mem/10.6.1/
+├── cache/thedotmack/claude-mem/10.6.2/
 │   ├── .mcp.json
 │   ├── hooks/hooks.json
 │   ├── scripts/
@@ -79,7 +82,7 @@ The plugin registers hooks at these stages:
 
 | Hook                 | Action                                      |
 | -------------------- | ------------------------------------------- |
-| **Setup**            | Runs `setup.sh` (does not exist in v10.6.1) |
+| **Setup**            | Runs `setup.sh` (does not exist in v10.6.2) |
 | **SessionStart**     | smart-install, worker start, context hook   |
 | **UserPromptSubmit** | session-init hook                           |
 | **PostToolUse**      | observation hook (saves what Claude does)   |
@@ -128,7 +131,7 @@ The dynamic fallback (`import.meta.url`) never executes because `typeof __dirnam
 Patch all 3 lines to `undefined` to activate the fallback:
 
 ```bash
-FILE="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-service.cjs"
+FILE="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.2/scripts/worker-service.cjs"
 
 # Backup
 cp "$FILE" "$FILE.bak"
@@ -158,8 +161,8 @@ grep -n 'var __dirname' "$FILE"
 
 # Start worker
 PATH="$HOME/.bun/bin:$PATH" \
-CLAUDE_PLUGIN_ROOT="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1" \
-nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-wrapper.cjs" > /dev/null 2>&1 &
+CLAUDE_PLUGIN_ROOT="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.2" \
+nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.2/scripts/worker-wrapper.cjs" > /dev/null 2>&1 &
 
 # Wait 8 seconds and verify
 sleep 8
@@ -180,8 +183,8 @@ Start manually:
 
 ```bash
 PATH="$HOME/.bun/bin:$PATH" \
-CLAUDE_PLUGIN_ROOT="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1" \
-nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/worker-wrapper.cjs" > /dev/null 2>&1 &
+CLAUDE_PLUGIN_ROOT="$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.2" \
+nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.2/scripts/worker-wrapper.cjs" > /dev/null 2>&1 &
 ```
 
 ### Permanent Solution
@@ -192,6 +195,15 @@ Ensure `~/.bun/bin` is in PATH in `.zshrc` / `.bashrc`:
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 ```
+
+## Devcontainer Isolation
+
+The devcontainer mounts only `~/.claude/settings.json`, `~/.claude/settings.local.json`, and `~/.claude/credentials.json` — NOT the full `~/.claude/` directory. This prevents the container's `installed_plugins.json` (with `/home/node/` paths) from overwriting the host's (with `/Users/...` paths).
+
+Plugins must be installed separately in each environment:
+
+- **Mac local:** `/plugin install claude-mem`
+- **Devcontainer:** `/plugin install claude-mem` (after container creation)
 
 ## Important Notes
 

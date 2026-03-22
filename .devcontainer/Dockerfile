@@ -69,6 +69,7 @@ RUN mkdir -p /commandhistory \
 RUN mkdir -p /workspace && chown node:node /workspace
 
 USER node
+RUN touch ~/.zshrc
 WORKDIR /workspace
 
 ENV HISTFILE=/commandhistory/.zsh_history
