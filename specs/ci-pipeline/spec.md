@@ -80,3 +80,14 @@ Lightweight, fast, and configurable via `.gitleaks.toml`. Scans only the PR comm
 ### D4: Weekly CodeQL schedule
 
 GitHub requires a scheduled scan to keep the Security tab results fresh and to catch vulnerabilities introduced by dependency updates without a code change.
+
+## Troubleshooting
+
+### Claude Security Review passes green but does not execute
+
+The action handles errors internally and does not fail the workflow. Check the "ClaudeCode Execution" step logs for:
+
+- **"Credit balance is too low"** — The `CLAUDE_API_KEY` secret requires prepaid API credits at `platform.claude.com/settings/billing`. The Claude Pro/Max subscription does not include API credits — they are separate billing systems.
+- **"authentication_error 401"** — The API key in GitHub Secrets is invalid or was rotated. Update `CLAUDE_API_KEY` in `Settings > Secrets and variables > Actions`.
+
+OAuth tokens (`claude login`) cannot be used in CI — only API keys work in non-interactive environments.

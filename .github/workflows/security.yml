@@ -12,7 +12,11 @@ jobs:
   security-review:
     # NOTE: Requires prepaid API credits at platform.claude.com.
     # The CLAUDE_API_KEY secret uses the Anthropic API (not Claude Pro/Max subscription).
-    # If credit balance is $0 this job will fail with "Credit balance too low".
+    # OAuth tokens (claude login) do NOT work in CI — only API keys.
+    #
+    # Known failure modes (job passes green but review is NOT executed):
+    #   - "Credit balance is too low" → Load credits at platform.claude.com/settings/billing
+    #   - "authentication_error 401"  → Rotate CLAUDE_API_KEY in GitHub Secrets (Settings > Secrets > Actions)
     name: Claude Security Review
     runs-on: ubuntu-latest
     steps:
