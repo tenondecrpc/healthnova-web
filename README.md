@@ -9,3 +9,5 @@ The application consumes a separate backend API authenticated via AWS Cognito, p
 - [Development environment setup](docs/devcontainer-guide.md)
 - [Devcontainer vs alternatives](docs/devcontainer-vs-alternatives.md)
 - [SDD approach](docs/sdd-approach.md)
+
+TEST
