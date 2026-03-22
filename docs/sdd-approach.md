@@ -73,6 +73,7 @@ Existing research and decisions documented in Spec-kit specs remain valid and ca
 A Go-based ecosystem configurator that includes a 9-phase SDD workflow alongside memory, persona, skills, and MCP server management.
 
 **Discarded because:**
+
 - Modifies global `~/.claude/` configuration (CLAUDE.md, settings.json, MCP servers), affecting all projects on the machine.
 - Significant overlap with existing tools already in use (claude-mem for memory, CLAUDE.md for conventions).
 - Would require maintaining a fork to scope installations to project-level only.
@@ -83,6 +84,7 @@ A Go-based ecosystem configurator that includes a 9-phase SDD workflow alongside
 A fully manual approach with no tooling or predefined format.
 
 **Discarded because:**
+
 - Not standardizable across teams without significant discipline overhead.
 - No automation, no validation, no structured change tracking.
 - Essentially what Spec-kit is, but without even a conventional structure to follow.

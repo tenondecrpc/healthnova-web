@@ -7,11 +7,7 @@
       "CLAUDE_CODE_VERSION": "latest"
     }
   },
-  "runArgs": [
-    "--cap-add=NET_ADMIN",
-    "--cap-add=NET_RAW",
-    "-p", "3000:3000"
-  ],
+  "runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW", "-p", "3000:3000"],
   "customizations": {
     "vscode": {
       "extensions": [

@@ -30,13 +30,13 @@ src/
 
 Brad Frost's Atomic Design defines 5 levels: atoms → molecules → organisms → templates → pages.
 
-| Level | Classic definition | In this project |
-|---|---|---|
-| **Atoms** | Smallest UI elements (button, input, label) | `components/ui/` — already handled by shadcn |
+| Level         | Classic definition                                                  | In this project                                    |
+| ------------- | ------------------------------------------------------------------- | -------------------------------------------------- |
+| **Atoms**     | Smallest UI elements (button, input, label)                         | `components/ui/` — already handled by shadcn       |
 | **Molecules** | Groups of atoms (search bar, form field with label + input + error) | Composed components that combine shadcn primitives |
-| **Organisms** | Complex UI sections (header, sidebar, data table with filters) | Feature-level composed sections |
-| **Templates** | Page-level layouts with placeholder content | Next.js `layout.tsx` files handle this natively |
-| **Pages** | Templates with real data | Next.js `page.tsx` files handle this natively |
+| **Organisms** | Complex UI sections (header, sidebar, data table with filters)      | Feature-level composed sections                    |
+| **Templates** | Page-level layouts with placeholder content                         | Next.js `layout.tsx` files handle this natively    |
+| **Pages**     | Templates with real data                                            | Next.js `page.tsx` files handle this natively      |
 
 ### Key insight
 
@@ -78,6 +78,7 @@ components/
 ```
 
 **Selected**: Option C. Reasons:
+
 - `ui/` is already atoms (shadcn owns this)
 - `composed/` holds anything reusable that combines atoms — no molecule/organism distinction needed
 - Feature folders hold components tightly coupled to a specific domain
@@ -85,12 +86,12 @@ components/
 
 ## Clean code principles applied
 
-| Principle | Application |
-|---|---|
-| **Single Responsibility** | Each folder has one reason to exist. `schemas/` = contracts. `hooks/` = reusable logic. `services/` = API calls. |
-| **Dependency Rule** | UI depends on schemas, not the other way around. Services depend on schemas for validation. |
-| **Colocation** | Feature-specific components live near their feature. Shared components live in `composed/`. |
-| **Screaming Architecture** | Looking at `src/` tells you what the app does (auth, dashboard, patients), not what framework it uses. |
+| Principle                  | Application                                                                                                      |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Single Responsibility**  | Each folder has one reason to exist. `schemas/` = contracts. `hooks/` = reusable logic. `services/` = API calls. |
+| **Dependency Rule**        | UI depends on schemas, not the other way around. Services depend on schemas for validation.                      |
+| **Colocation**             | Feature-specific components live near their feature. Shared components live in `composed/`.                      |
+| **Screaming Architecture** | Looking at `src/` tells you what the app does (auth, dashboard, patients), not what framework it uses.           |
 
 ## Next.js 16 conventions to respect
 

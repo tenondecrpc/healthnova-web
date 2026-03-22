@@ -22,6 +22,7 @@ Persistent memory plugin for Claude Code that preserves context between sessions
 ```
 
 On install, the `smart-install.js` hook auto-installs:
+
 - **Bun** (JS runtime) at `~/.bun/bin/bun`
 - **uv** (Python package manager) for ChromaDB
 - Plugin dependencies via `bun install`
@@ -60,30 +61,30 @@ On install, the `smart-install.js` hook auto-installs:
 
 Main options:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `CLAUDE_MEM_MODEL` | `claude-sonnet-4-5` | AI model for processing |
-| `CLAUDE_MEM_WORKER_PORT` | `37777` | Worker HTTP port |
-| `CLAUDE_MEM_WORKER_HOST` | `127.0.0.1` | Worker host |
-| `CLAUDE_MEM_PROVIDER` | `claude` | AI provider (claude/gemini/openrouter) |
-| `CLAUDE_MEM_CLAUDE_AUTH_METHOD` | `cli` | Authentication method |
-| `CLAUDE_MEM_DATA_DIR` | `~/.claude-mem` | Data directory |
-| `CLAUDE_MEM_LOG_LEVEL` | `INFO` | Log level |
-| `CLAUDE_MEM_CHROMA_ENABLED` | `true` | ChromaDB enabled |
-| `CLAUDE_MEM_CHROMA_PORT` | `8000` | ChromaDB port |
+| Variable                        | Default             | Description                            |
+| ------------------------------- | ------------------- | -------------------------------------- |
+| `CLAUDE_MEM_MODEL`              | `claude-sonnet-4-5` | AI model for processing                |
+| `CLAUDE_MEM_WORKER_PORT`        | `37777`             | Worker HTTP port                       |
+| `CLAUDE_MEM_WORKER_HOST`        | `127.0.0.1`         | Worker host                            |
+| `CLAUDE_MEM_PROVIDER`           | `claude`            | AI provider (claude/gemini/openrouter) |
+| `CLAUDE_MEM_CLAUDE_AUTH_METHOD` | `cli`               | Authentication method                  |
+| `CLAUDE_MEM_DATA_DIR`           | `~/.claude-mem`     | Data directory                         |
+| `CLAUDE_MEM_LOG_LEVEL`          | `INFO`              | Log level                              |
+| `CLAUDE_MEM_CHROMA_ENABLED`     | `true`              | ChromaDB enabled                       |
+| `CLAUDE_MEM_CHROMA_PORT`        | `8000`              | ChromaDB port                          |
 
 ## Registered Hooks
 
 The plugin registers hooks at these stages:
 
-| Hook | Action |
-|------|--------|
-| **Setup** | Runs `setup.sh` (does not exist in v10.6.1) |
-| **SessionStart** | smart-install, worker start, context hook |
-| **UserPromptSubmit** | session-init hook |
-| **PostToolUse** | observation hook (saves what Claude does) |
-| **Stop** | summarize hook |
-| **SessionEnd** | session-complete hook |
+| Hook                 | Action                                      |
+| -------------------- | ------------------------------------------- |
+| **Setup**            | Runs `setup.sh` (does not exist in v10.6.1) |
+| **SessionStart**     | smart-install, worker start, context hook   |
+| **UserPromptSubmit** | session-init hook                           |
+| **PostToolUse**      | observation hook (saves what Claude does)   |
+| **Stop**             | summarize hook                              |
+| **SessionEnd**       | session-complete hook                       |
 
 ## Available Skills
 
@@ -102,14 +103,16 @@ The plugin registers hooks at these stages:
 - `smart_outline` - Code outline
 - `smart_unfold` - Unfold code details
 
-## Known Bug: Hardcoded __dirname (Issue #1433)
+## Known Bug: Hardcoded \_\_dirname (Issue #1433)
 
 ### Symptoms
+
 - Worker starts and `/health` responds OK
 - All other endpoints return: `"Database is still initializing, please retry"` indefinitely
 - Log shows: `"Background initialization failed Critical: code.json mode file missing"`
 
 ### Root Cause
+
 `worker-service.cjs` contains 3 hardcoded paths from the original developer:
 
 ```
@@ -172,6 +175,7 @@ curl -s "http://127.0.0.1:37777/api/search?query=test&limit=5"
 The hooks run `bun-runner.js` with `node`, which looks for `bun` in PATH and at `~/.bun/bin/bun`. If Bun was just installed and the terminal hasn't been restarted, the hook silently fails with `"Failed to start worker"`.
 
 ### Temporary Solution
+
 Start manually:
 
 ```bash
@@ -181,6 +185,7 @@ nohup bun "$HOME/.claude/plugins/cache/thedotmack/claude-mem/10.6.1/scripts/work
 ```
 
 ### Permanent Solution
+
 Ensure `~/.bun/bin` is in PATH in `.zshrc` / `.bashrc`:
 
 ```bash

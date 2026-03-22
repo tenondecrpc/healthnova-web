@@ -12,14 +12,13 @@ export default defineConfig({
     exclude: ["node_modules", ".next", "e2e"],
     coverage: {
       provider: "v8",
-      exclude: [
-        "node_modules",
-        ".next",
-        "e2e",
-        "tests",
-        "*.config.*",
-        "src/app/layout.tsx",
-      ],
+      exclude: ["node_modules", ".next", "e2e", "tests", "*.config.*", "src/app/layout.tsx"],
+      thresholds: {
+        statements: 90,
+        branches: 90,
+        functions: 90,
+        lines: 90,
+      },
     },
   },
 });

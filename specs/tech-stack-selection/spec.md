@@ -49,26 +49,26 @@ React Compiler (babel-plugin-react-compiler) handles memoization automatically. 
 
 ## Installed versions
 
-| Library | Version |
-|---|---|
-| next | 16.2.1 |
-| react / react-dom | 19.2.4 |
-| typescript | ^5 |
-| tailwindcss | ^4 |
-| shadcn | 4.1.0 |
-| aws-amplify | ^6.16.3 |
-| @aws-amplify/adapter-nextjs | ^1.7.2 |
-| @tanstack/react-query | ^5.94.5 |
-| @tanstack/react-table | ^8.21.3 |
-| zustand | ^5.0.12 |
-| react-hook-form | ^7.71.2 |
-| zod | ^4.3.6 |
-| @hookform/resolvers | ^5.2.2 |
-| recharts | ^3.8.0 |
-| next-intl | ^4.8.3 |
-| axios | ^1.13.6 |
-| date-fns | ^4.1.0 |
-| sonner | ^2.0.7 |
-| lucide-react | ^0.577.0 |
-| prettier | ^3.8.1 |
-| babel-plugin-react-compiler | 1.0.0 |
+| Library                     | Version  |
+| --------------------------- | -------- |
+| next                        | 16.2.1   |
+| react / react-dom           | 19.2.4   |
+| typescript                  | ^5       |
+| tailwindcss                 | ^4       |
+| shadcn                      | 4.1.0    |
+| aws-amplify                 | ^6.16.3  |
+| @aws-amplify/adapter-nextjs | ^1.7.2   |
+| @tanstack/react-query       | ^5.94.5  |
+| @tanstack/react-table       | ^8.21.3  |
+| zustand                     | ^5.0.12  |
+| react-hook-form             | ^7.71.2  |
+| zod                         | ^4.3.6   |
+| @hookform/resolvers         | ^5.2.2   |
+| recharts                    | ^3.8.0   |
+| next-intl                   | ^4.8.3   |
+| axios                       | ^1.13.6  |
+| date-fns                    | ^4.1.0   |
+| sonner                      | ^2.0.7   |
+| lucide-react                | ^0.577.0 |
+| prettier                    | ^3.8.1   |
+| babel-plugin-react-compiler | 1.0.0    |
