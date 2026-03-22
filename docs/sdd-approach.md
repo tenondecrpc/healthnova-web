@@ -42,29 +42,51 @@ specs/
 - **No built-in validation** — nothing enforces that specs are complete or consistent.
 - **Scalability depends on discipline** — without tooling, the quality of specs is only as good as the team's commitment to writing them.
 
-## Recommended for production: OpenSpec
+## Alternative: OpenSpec
 
-Once the PoC validates that spec-anchored SDD works for the team, the recommendation is to migrate to **OpenSpec** (`@fission-ai/openspec`).
+**OpenSpec** (`@fission-ai/openspec`) is a CLI-based SDD tool that adds automation and structure on top of markdown specs.
 
-### Why OpenSpec for production
+### What it adds over Spec-kit
 
-- **Spec deltas** — when a change is proposed, OpenSpec generates a structured diff of requirements (not just code). This makes it clear what changed at the intent level.
-- **Automated workflow** — `openspec:proposal` analyzes existing specs and codebase, then generates proposal, design, tasks, and spec deltas automatically.
-- **Standardized format** — requirements use SHALL statements, scenarios use GIVEN/WHEN/THEN. Consistent across teams and projects.
-- **30+ agent compatibility** — works natively with Claude Code, Cursor, Copilot, Gemini CLI, and others. The team is not locked into a single AI tool.
-- **Archive lifecycle** — `openspec archive` merges change deltas into main specs, keeping the spec tree clean.
-- **MIT licensed, no API key** — open source, no external service dependency. Specs are just markdown in the repo.
+- **Spec deltas** — structured diffs at the requirements level, not just code
+- **Automated workflow** — CLI generates proposals, designs, tasks, and delta specs
+- **Standardized format** — SHALL statements, GIVEN/WHEN/THEN scenarios
+- **30+ agent compatibility** — works with Claude Code, Cursor, Copilot, Gemini CLI, and others
+- **Archive lifecycle** — merges change deltas into main specs
+- **MIT licensed, no API key** — open source, specs are just markdown
 
-### Migration path
+### What it costs
 
-The migration from Spec-kit to OpenSpec is straightforward:
+- **CLI dependency** — requires `npm install -g @fission-ai/openspec@latest`
+- **Change-driven model** — daily work revolves around temporary changes, not specs directly (see lifecycle comparison above)
+- **Learning curve** — team must learn CLI commands, schemas, and artifact conventions
+- **More moving parts** — `.openspec.yaml`, delta specs, archive step
+
+### Migration path (if chosen)
 
 1. Install: `npm install -g @fission-ai/openspec@latest`
 2. Initialize: `openspec init`
-3. Move existing `specs/<feature>/spec.md` content into OpenSpec's `openspec/specs/<capability>/spec.md` format (Purpose + SHALL requirements + GIVEN/WHEN/THEN scenarios).
-4. The `constitution.md` content maps to OpenSpec's configuration and project-level rules.
+3. Move existing `specs/<feature>/spec.md` content into `openspec/specs/<capability>/spec.md` format
+4. The `constitution.md` content maps to OpenSpec's configuration and project-level rules
 
-Existing research and decisions documented in Spec-kit specs remain valid and can be referenced during migration.
+Existing research and decisions documented in Spec-kit specs remain valid.
+
+## Spec-kit vs OpenSpec: lifecycle model
+
+Both are spec-anchored, but they differ in how specs evolve:
+
+|                  | Spec-kit                                       | OpenSpec                                                |
+| ---------------- | ---------------------------------------------- | ------------------------------------------------------- |
+| Working artifact | The spec itself                                | A temporary "change"                                    |
+| How specs evolve | Direct edits to `specs/<name>/spec.md`         | Delta specs proposed in the change, merged on archive   |
+| Lifecycle        | Permanent — specs are the living documentation | Change → implement → archive → delta merge              |
+| Archive step     | Not needed — specs persist in place            | Required — moves change to `archive/` and merges deltas |
+
+**Spec-kit** is purely spec-anchored: you edit the spec, implement, and the spec reflects the current state. There is no intermediary artifact.
+
+**OpenSpec** introduces a change-driven layer on top of spec-anchored: daily work revolves around changes (temporary), not specs (permanent). Specs update as a side effect of archiving a completed change. This makes OpenSpec a hybrid between spec-anchored and spec-first in practice.
+
+The practical consequence: Spec-kit has no `/sk:archive` command because there is nothing to archive. OpenSpec needs `/opsx:archive` to close the change lifecycle and sync deltas back to the main specs.
 
 ## Tools evaluated and discarded
 
