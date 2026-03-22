@@ -55,8 +55,12 @@ Configured in `Settings → Rulesets → protect-main` targeting `main`.
 Active rules:
 
 - **Require a pull request before merging** — all changes via PR
-- **Require status checks to pass** — verify, security, and CodeQL jobs must be green
-- **Require code scanning results** — CodeQL must report results on the PR (uses SARIF upload)
+- **Require status checks to pass** — the following jobs must be green before merge:
+  - `Verify / Lint, Test & Build (pull_request)`
+  - `Security / Claude Security Review (pull_request)`
+  - `Security / Secret Scanning (Gitleaks) (pull_request)`
+  - `CodeQL / CodeQL Analysis (pull_request)`
+- **Require code scanning results** — CodeQL must upload SARIF results for the PR commits (separate from the job status check above)
 - **Block force pushes**
 
 ## Decisions
