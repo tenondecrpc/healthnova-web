@@ -50,6 +50,10 @@ APPROVED_DOMAINS=(
   "marketplace.visualstudio.com"
   "vscode.blob.core.windows.net"
   "update.code.visualstudio.com"
+  # Bun runtime (required by claude-mem plugin)
+  "bun.sh"
+  # uv / astral (Python package manager, used by claude-mem for Chroma vector DB)
+  "astral.sh"
 )
 
 echo "Initializing firewall..."
