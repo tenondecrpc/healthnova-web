@@ -69,10 +69,21 @@ RUN mkdir -p /commandhistory \
 RUN mkdir -p /workspace && chown node:node /workspace
 
 USER node
+
+# Pre-trust GitHub SSH host key so git operations don't prompt for confirmation
+RUN mkdir -p ~/.ssh && ssh-keyscan -t ed25519,rsa,ecdsa github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+# Bun runtime (required by claude-mem plugin, v1.1.14+ needed)
+RUN curl -fsSL https://bun.sh/install | bash
+
+# uv — Python package manager (optional, enables Chroma vector search in claude-mem)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 RUN touch ~/.zshrc
 WORKDIR /workspace
 
 ENV HISTFILE=/commandhistory/.zsh_history
 ENV SHELL=/bin/zsh
+ENV PATH="/home/node/.bun/bin:/home/node/.local/bin:$PATH"
 
 CMD ["zsh"]

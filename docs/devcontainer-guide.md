@@ -43,6 +43,21 @@ docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")
 devcontainer up --workspace-folder . --remove-existing-container --build-no-cache
 ```
 
+What each flag does:
+
+- `--remove-existing-container` — stops and deletes the current container before starting a new one
+- `--build-no-cache` — forces Docker to rebuild the image from scratch, ignoring cached layers
+
+Use this when you change `Dockerfile`, `devcontainer.json`, or `init-firewall.sh`. Without `--build-no-cache`, Docker reuses cached layers and your changes may not take effect.
+
+Without `--build-no-cache` (faster, reuses image — use when only config changed, not Dockerfile):
+
+```bash
+devcontainer up --workspace-folder . --remove-existing-container
+```
+
+Your data is safe: the workspace (`/workspace`), shell history (volume), and Claude credentials (`~/.claude` bind mount) are all preserved across rebuilds.
+
 ## Re-initialize the firewall rules without rebuilding the container
 
 ```bash
@@ -66,6 +81,55 @@ claude login
 The OAuth token is stored in `~/.claude/credentials.json` via the bind mount, so it persists across container and machine restarts.
 
 **Do not** set `ANTHROPIC_API_KEY` in `.env` for local development — it conflicts with the OAuth token and requires separate prepaid API credits.
+
+#### Troubleshooting: auth conflict warning
+
+If Claude shows this on startup:
+
+```
+⚠ Auth conflict: Both a token (claude.ai) and an API key (ANTHROPIC_API_KEY) are set.
+```
+
+It means `ANTHROPIC_API_KEY` is present in the container environment. The most common cause is a **stale container** built before the variable was removed from `.env` or `devcontainer.json` — the old environment is baked into the running container.
+
+**Permanent fix — rebuild the container from scratch:**
+
+```bash
+devcontainer up --workspace-folder . --remove-existing-container
+```
+
+This discards the old container (including its stale env vars) and creates a clean one. The OAuth token in `~/.claude/credentials.json` is preserved via the bind mount, so no re-login is needed.
+
+If the conflict persists after a rebuild, the variable is still being injected somewhere. Check the host shell profiles:
+
+```bash
+grep -r ANTHROPIC_API_KEY ~/.zshrc ~/.bashrc ~/.zprofile ~/.profile ~/.zshenv 2>/dev/null
+```
+
+**Fix for the current session only** (without rebuilding):
+
+```bash
+unset ANTHROPIC_API_KEY
+claude
+```
+
+To find the source permanently, check where it's being set on the host:
+
+```bash
+grep -r ANTHROPIC_API_KEY ~/.zshrc ~/.bashrc ~/.zprofile ~/.profile ~/.zshenv 2>/dev/null
+```
+
+Remove or comment it out from whichever file exports it. The OAuth token already handles auth — `ANTHROPIC_API_KEY` is not needed.
+
+#### Troubleshooting: /login interrupted immediately
+
+If you open the container with `devcontainer exec --workspace-folder . bash` (without `--`) and `/login` exits immediately without showing a URL, the issue is a missing TTY. Use:
+
+```bash
+devcontainer exec --workspace-folder . -- bash
+```
+
+The `--` separator ensures a proper interactive terminal is allocated.
 
 ### Plugins
 
