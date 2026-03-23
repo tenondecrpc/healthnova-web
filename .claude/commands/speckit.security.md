@@ -1,5 +1,5 @@
 ---
-name: "SK: Security"
+name: "Spec Kit: Security"
 description: "Security review for health data compliance"
 category: Workflow
 tags: [workflow, security, hipaa]
@@ -7,7 +7,9 @@ tags: [workflow, security, hipaa]
 
 Run a security review on a feature implementation, focused on health data compliance.
 
-**Input**: The argument after `/sk:security` is the feature name matching `specs/<name>/`.
+This is a project-specific extension — Spec Kit does not include a dedicated security review step.
+
+**Input**: The argument after `/speckit.security` is the feature name matching `specs/<name>/`.
 
 ---
 

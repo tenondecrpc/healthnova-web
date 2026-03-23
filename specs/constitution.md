@@ -50,9 +50,10 @@
 - Tests live in a dedicated `tests/` directory at the project root, mirroring the `src/` structure.
 - Tests must not contain PII or sensitive health data in fixtures or mocks.
 
-## 7. Spec-kit workflow
+## 7. Spec Kit workflow
 
 - Every non-trivial feature must have a spec before implementation.
 - Specs live in `specs/<feature-name>/` with: `research.md`, `spec.md`, `plan.md`, `tasks.md`.
 - Decisions are documented in `spec.md` — no separate ADR files.
+- Workflow commands: `/speckit.clarify` → `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement` → `/speckit.security`.
 - This constitution can only be amended by explicit team consensus.
