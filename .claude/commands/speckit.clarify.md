@@ -1,15 +1,15 @@
 ---
-name: "SK: Explore"
-description: "Think through ideas, investigate problems, clarify requirements"
+name: "Spec Kit: Clarify"
+description: "Identify ambiguities, explore ideas, clarify requirements"
 category: Workflow
-tags: [workflow, explore, thinking]
+tags: [workflow, clarify, thinking]
 ---
 
-Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.
+Enter clarify mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.
 
-**IMPORTANT: Explore mode is for thinking, not implementing.** You may read files, search code, and investigate the codebase, but you must NEVER write code or implement features. You MAY create or update spec artifacts (research.md, spec.md) if the user asks — that's capturing thinking, not implementing.
+**IMPORTANT: Clarify mode is for thinking, not implementing.** You may read files, search code, and investigate the codebase, but you must NEVER write code or implement features. You MAY create or update spec artifacts (research.md, spec.md) if the user asks — that's capturing thinking, not implementing.
 
-**Input**: The argument after `/sk:explore` is whatever the user wants to think about.
+**Input**: The argument after `/speckit.clarify` is whatever the user wants to think about.
 
 ---
 
@@ -27,7 +27,7 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 - Brainstorm approaches, build comparison tables, sketch tradeoffs
 - Identify risks, gaps in understanding, unknowns
 
-## Spec-kit Awareness
+## Spec Kit Awareness
 
 At the start, check what exists:
 
@@ -47,12 +47,12 @@ When insights crystallize, offer to capture them:
 
 The user decides — offer and move on. Don't auto-capture.
 
-When ready to formalize: "Want me to create a spec? Run `/sk:propose <name>`."
+When ready to formalize: "Want me to create a specification? Run `/speckit.specify <name>`."
 
 ## Guardrails
 
 - **Don't implement** — Never write application code
 - **Don't fake understanding** — If unclear, dig deeper
-- **Don't rush** — Explore mode is thinking time
+- **Don't rush** — Clarify mode is thinking time
 - **Don't force structure** — Let patterns emerge
 - **Do read `specs/constitution.md`** — Know the project constraints

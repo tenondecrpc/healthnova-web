@@ -1,13 +1,13 @@
 ---
-name: "SK: Propose"
-description: "Create a new feature spec with all artifacts"
+name: "Spec Kit: Specify"
+description: "Define requirements and specifications for a feature"
 category: Workflow
-tags: [workflow, spec, artifacts]
+tags: [workflow, spec, requirements]
 ---
 
-Create a new feature spec with all required artifacts in one step.
+Create a specification for a feature — the "what and why".
 
-**Input**: The argument after `/sk:propose` is the feature name (kebab-case), OR a description of what to build.
+**Input**: The argument after `/speckit.specify` is the feature name (kebab-case), OR a description of what to build.
 
 ---
 
@@ -21,32 +21,24 @@ Create a new feature spec with all required artifacts in one step.
    - Read `specs/constitution.md` for immutable rules
    - Check existing specs for patterns and conventions: `ls specs/`
 
-4. **Create `specs/<name>/` directory**
+4. **Create `specs/<name>/` directory** (if it doesn't exist)
 
-5. **Create artifacts in order**:
+5. **Create artifacts**:
 
    **a. `research.md`** — Exploration: what was evaluated and why
    - Investigate the codebase for relevant existing code
    - Research options, alternatives, trade-offs
    - Document findings with clear sections
 
-   **b. `spec.md`** — Requirements + decisions + contracts
+   **b. `spec.md`** — Specification: requirements + decisions + contracts
    - Problem statement
    - Requirements (functional and non-functional)
    - Decisions with rationale (D1, D2, ... format matching existing specs)
    - Data contracts (Zod schemas, API interfaces) if applicable
 
-   **c. `plan.md`** — Implementation phases
-   - Break work into sequential phases
-   - Each phase has clear scope and deliverables
-   - Dependencies between phases are explicit
-
-   **d. `tasks.md`** — Definition of done checklist
-   - Concrete checkboxes per phase
-   - Each task is testable/verifiable
-   - Include test tasks per constitution §6
-
-6. **Show summary** of what was created and prompt: "Run `/sk:apply <name>` to start implementing."
+6. **Show summary** of what was created and prompt next steps:
+   - "Run `/speckit.plan <name>` to create the implementation plan."
+   - "Run `/speckit.clarify <name>` if requirements need further exploration."
 
 ## Guidelines
 
@@ -60,4 +52,4 @@ Create a new feature spec with all required artifacts in one step.
 
 - Do NOT write application code — only spec artifacts
 - Ensure spec.md references constitution constraints where relevant
-- Tasks must be granular enough for a single implementation session each
+- Focus on the "what and why", not the "how" — that's for `/speckit.plan`

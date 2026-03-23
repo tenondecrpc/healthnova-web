@@ -1,13 +1,13 @@
 ---
-name: "SK: Apply"
-description: "Implement tasks from a feature spec"
+name: "Spec Kit: Implement"
+description: "Execute implementation from feature spec tasks"
 category: Workflow
 tags: [workflow, implementation]
 ---
 
 Implement tasks from an existing feature spec.
 
-**Input**: The argument after `/sk:apply` is the feature name matching `specs/<name>/`.
+**Input**: The argument after `/speckit.implement` is the feature name matching `specs/<name>/`.
 
 ---
 
@@ -41,7 +41,7 @@ Implement tasks from an existing feature spec.
 6. **After all tasks complete**, show summary:
    - Tasks completed
    - Any deviations from the plan (and why)
-   - Suggest: "Run `/sk:security <name>` to review before merging"
+   - Suggest: "Run `/speckit.security <name>` to review before merging"
 
 ## Guidelines
 

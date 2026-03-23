@@ -17,8 +17,10 @@ Web dashboard for a preventive health platform. Consumes a separate backend API 
 3. If not found, proceed with repo search
 4. Always verify paths with Glob/Grep before acting
 
-## SDD workflow
+## Spec Kit workflow (SDD)
 
 - Every non-trivial feature must have a spec in `specs/<feature-name>/` before implementation.
 - Only read the specific spec you need — do not load all specs into context.
-- See `docs/sdd-approach.md` for rationale and migration path to OpenSpec.
+- Artifact model follows [Spec Kit](https://github.com/github/spec-kit): Constitution → Specification → Plan → Tasks → Implementation.
+- Commands: `/speckit.clarify` → `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement` → `/speckit.security`.
+- See `docs/sdd-approach.md` for rationale and alternative tools (OpenSpec, `specify` CLI).
