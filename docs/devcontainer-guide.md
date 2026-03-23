@@ -131,6 +131,16 @@ devcontainer exec --workspace-folder . -- bash
 
 The `--` separator ensures a proper interactive terminal is allocated.
 
+### Autonomous mode
+
+The devcontainer firewall provides enough isolation to run Claude without per-action permission prompts:
+
+```bash
+claude --dangerously-skip-permissions
+```
+
+Useful for long-running tasks or automated workflows. Only use with trusted repositories — this flag skips all confirmations, including file writes and command execution.
+
 ### Plugins
 
 Plugins installed on the host are available inside the container. The `fix-claude-paths.sh` script runs automatically on container start and rewrites macOS absolute paths (`/Users/<user>/...`) to container paths (`/home/node/...`) in the plugin registry.

@@ -1,20 +1,27 @@
 FROM node:22-slim
 
 ARG TZ=America/Sao_Paulo
-ARG CLAUDE_CODE_VERSION=latest
 ARG GIT_DELTA_VERSION=0.18.2
+ARG ZSH_IN_DOCKER_VERSION=1.2.0
+ARG FZF_VERSION=0.70.0
 
 ENV TZ=${TZ} \
     DEVCONTAINER=true \
     DEBIAN_FRONTEND=noninteractive
 
-# System dependencies + iptables for firewall
+# System dependencies + iptables for firewall + locale
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl git gnupg jq unzip vim nano \
-    zsh fzf sudo openssh-client \
+    zsh sudo openssh-client \
     iptables ipset iproute2 dnsutils \
     python3 python3-pip \
+    locales \
+    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && locale-gen \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8
 
 # AWS CLI v2 (multi-arch)
 RUN ARCH=$(dpkg --print-architecture) \
@@ -27,6 +34,17 @@ RUN ARCH=$(dpkg --print-architecture) \
     && unzip awscliv2.zip \
     && ./aws/install \
     && rm -rf awscliv2.zip aws
+
+# fzf binary + shell integration (pinned version, multi-arch)
+RUN ARCH=$(dpkg --print-architecture) \
+    && if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then FZF_ARCH="linux_arm64"; else FZF_ARCH="linux_amd64"; fi \
+    && curl -fsSL "https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz" \
+       | tar -xz -C /usr/local/bin \
+    && mkdir -p /usr/share/doc/fzf/examples \
+    && curl -fsSL "https://raw.githubusercontent.com/junegunn/fzf/v${FZF_VERSION}/shell/key-bindings.zsh" \
+       -o /usr/share/doc/fzf/examples/key-bindings.zsh \
+    && curl -fsSL "https://raw.githubusercontent.com/junegunn/fzf/v${FZF_VERSION}/shell/completion.zsh" \
+       -o /usr/share/doc/fzf/examples/completion.zsh
 
 # GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
@@ -49,15 +67,13 @@ RUN ARCH=$(dpkg --print-architecture) \
     && mv /tmp/delta-${GIT_DELTA_VERSION}-${DELTA_ARCH}/delta /usr/local/bin/delta \
     && rm -rf /tmp/delta*
 
-# Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
-
 # Firewall init script
 COPY init-firewall.sh /usr/local/bin/init-firewall.sh
 RUN chmod +x /usr/local/bin/init-firewall.sh
 
-# Give node user sudo access (needed for firewall init)
-RUN echo "node ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/node
+# Give node user sudo access only for the firewall script
+RUN echo "node ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/node-firewall \
+    && chmod 0440 /etc/sudoers.d/node-firewall
 
 # Persistent shell history
 RUN mkdir -p /commandhistory \
@@ -73,13 +89,24 @@ USER node
 # Pre-trust GitHub SSH host key so git operations don't prompt for confirmation
 RUN mkdir -p ~/.ssh && ssh-keyscan -t ed25519,rsa,ecdsa github.com >> ~/.ssh/known_hosts 2>/dev/null
 
+# Claude Code CLI (native installer — must run as node so it installs to /home/node/.local/bin)
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
 # Bun runtime (required by claude-mem plugin, v1.1.14+ needed)
 RUN curl -fsSL https://bun.sh/install | bash
 
 # uv — Python package manager (optional, enables Chroma vector search in claude-mem)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-RUN touch ~/.zshrc
+# ZSH with powerlevel10k theme, git and fzf plugins
+RUN sh -c "$(curl -fsSL https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
+    -p git \
+    -p fzf \
+    -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
+    -a "source /usr/share/doc/fzf/examples/completion.zsh" \
+    -a "export HISTFILE=/commandhistory/.zsh_history" \
+    -x
+
 WORKDIR /workspace
 
 ENV HISTFILE=/commandhistory/.zsh_history
