@@ -1,10 +1,31 @@
 # Spec — Testing Infrastructure
 
-## Status: draft
+**Feature branch:** `004-testing-infrastructure`
+**Status:** `done`
+
+---
 
 ## Summary
 
 Configure Vitest + React Testing Library as the unit/component testing framework for HealthNova Web, following Next.js 16 official recommendations. Establish conventions, helpers, and initial tests for existing code.
+
+---
+
+## User Stories
+
+### US-1: Test execution and coverage
+
+**As a** developer,
+**I want to** be able to write and run unit and component tests easily,
+**So that** I can catch regressions and ensure reliability of the health dashboard components.
+
+**Acceptance Criteria:**
+
+- [x] Vitest runs tests correctly with jsdom.
+- [x] `test`, `test:run`, and `test:coverage` scripts exist and work.
+- [x] The `@/*` path aliases resolve correctly in tests.
+
+---
 
 ## Requirements
 
@@ -41,14 +62,16 @@ Configure Vitest + React Testing Library as the unit/component testing framework
 ### Test helpers
 
 - The project SHALL have a `tests/setup.ts` file for global test setup (RTL cleanup, custom matchers).
-- The project SHALL have a `tests/test-utils.tsx` file that re-exports RTL's `render` wrapped with common providers (QueryClientProvider, etc.) as features are implemented.
-- The `setup.ts` SHALL import `@testing-library/jest-dom/vitest` for DOM matchers (`toBeInTheDocument`, `toHaveTextContent`, etc.).
+- The project SHALL have a `tests/test-utils.tsx` file that re-exports RTL's `render` wrapped with common providers as features are implemented.
+- The `setup.ts` SHALL import `@testing-library/jest-dom/vitest` for DOM matchers.
 
 ### Initial tests
 
 - The project SHALL include a test for `src/lib/utils.ts` at `tests/lib/utils.test.ts`.
 - The project SHALL include a test for `src/components/ui/button.tsx` at `tests/components/ui/button.test.tsx`.
 - The project SHALL include a test for `src/app/not-found.tsx` at `tests/app/not-found.test.tsx`.
+
+---
 
 ## Decisions
 
@@ -58,16 +81,27 @@ Next.js 16 officially recommends Vitest. It's faster, has native ESM support, re
 
 ### D2: Dedicated `tests/` directory over colocated tests
 
-Tests live in a dedicated `tests/` directory at the project root, mirroring the `src/` folder structure. This keeps source code clean, simplifies CI glob patterns, and avoids test files being processed by Next.js. Setup and shared utilities (`setup.ts`, `test-utils.tsx`) live at `tests/` root level.
+Tests live in a dedicated `tests/` directory at the project root, mirroring the `src/` folder structure. This keeps source code clean, simplifies CI glob patterns, and avoids test files being processed by Next.js. Setup and shared utilities live at `tests/` root level.
 
-### D4: `@testing-library/jest-dom/vitest` for DOM assertions
+### D3: `@testing-library/jest-dom/vitest` for DOM assertions
 
 Provides idiomatic matchers like `toBeInTheDocument()` instead of raw `toBeDefined()`. The `/vitest` entry point auto-extends Vitest's `expect` without manual augmentation.
 
-### D5: Coverage thresholds start low, increase over time
+### D4: Coverage thresholds start low, increase over time
 
 Initial thresholds: 0% (no enforcement). As features are built and tested, thresholds will be raised. This avoids blocking development on a mostly-scaffolded project.
 
-### D6: E2E deferred
+### D5: E2E deferred
 
 Playwright/Cypress will be evaluated when the app has real user flows (auth, forms, navigation). Current stage is too early for E2E.
+
+---
+
+## Review & Acceptance Checklist
+
+- [x] All [NEEDS CLARIFICATION] markers resolved
+- [x] Requirements are testable and unambiguous
+- [x] Decisions reference constitution constraints
+- [x] No speculative or "might need" features included
+- [x] Security rules (constitution §4) addressed
+- [x] Test tasks included (constitution §6)

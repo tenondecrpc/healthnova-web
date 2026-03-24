@@ -12,45 +12,122 @@ There are three levels of SDD (per Martin Fowler's analysis):
 
 This project uses **spec-anchored** — specs live in the repo, document decisions, and evolve with the codebase.
 
-## Current approach: manual Spec Kit workflow (Proof of Concept)
+## Current approach: Spec Kit (CLI-compatible)
 
-For the initial phase of HealthNova, we follow [Spec Kit](https://github.com/github/spec-kit)'s artifact model manually — a lightweight, markdown-based approach with no external tooling dependency.
-
-The project's artifact structure already aligns with Spec Kit's official workflow: Constitution → Specification → Plan → Tasks → Implementation. The only project-specific addition is `research.md` (exploration phase), which has no Spec Kit equivalent.
-
-### Why manual for the PoC
-
-- **Zero dependencies** — no CLI to install, just markdown files in `specs/`.
-- **Full control** — we define the format, structure, and workflow ourselves.
-- **Low friction** — any dev can read and write specs without learning a new tool.
-- **Good enough to validate** — lets us test whether spec-anchored SDD works for the team before committing to a tool.
+This project follows [Spec Kit](https://github.com/github/spec-kit)'s artifact model in a structure fully compatible with the `specify` CLI. The setup is **CLI-augmented**: the slash commands work without the CLI installed, but the CLI provides upgrades, scaffolding scripts, and tooling compatibility.
 
 ### Artifact structure
 
-| Spec Kit artifact    | Project file      | Description                          |
-| -------------------- | ----------------- | ------------------------------------ |
-| Constitution         | `constitution.md` | Immutable project rules              |
-| _(project-specific)_ | `research.md`     | Exploration: what was evaluated, why |
-| Specification        | `spec.md`         | Requirements + decisions + contracts |
-| Plan                 | `plan.md`         | Implementation phases                |
-| Tasks                | `tasks.md`        | Definition of done checklist         |
+| Spec Kit artifact    | Project file                      | Description                          |
+| -------------------- | --------------------------------- | ------------------------------------ |
+| Constitution         | `.specify/memory/constitution.md` | Immutable project rules              |
+| _(project-specific)_ | `specs/<NNN>-name/research.md`    | Exploration: what was evaluated, why |
+| Specification        | `specs/<NNN>-name/spec.md`        | Requirements + decisions + contracts |
+| Plan                 | `specs/<NNN>-name/plan.md`        | Implementation phases                |
+| Tasks                | `specs/<NNN>-name/tasks.md`       | Definition of done checklist         |
 
 ```
+.specify/
+  memory/
+    constitution.md                   # Constitution (canonical)
+  scripts/
+    check-prerequisites.sh
+    common.sh
+    create-new-feature.sh             # Scaffolds feature dir + git branch
+    setup-plan.sh                     # Validates spec before planning
+    update-claude-md.sh               # Injects active feature into CLAUDE.md
+  templates/
+    spec-template.md                  # Spec artifact template
+    plan-template.md                  # Plan artifact template (with Phase -1 gates)
+    tasks-template.md                 # Tasks artifact template (with [P] markers)
+
 specs/
-  constitution.md                       # Constitution (Spec Kit)
-  <feature-name>/
-    research.md                         # Exploration (project-specific)
-    spec.md                             # Specification (Spec Kit)
-    plan.md                             # Plan (Spec Kit)
-    tasks.md                            # Tasks (Spec Kit)
+  <NNN>-feature-name/                 # Feature directories (sequentially numbered)
+    research.md                       # Exploration (project-specific)
+    spec.md                           # Specification (Spec Kit)
+    plan.md                           # Plan (Spec Kit)
+    tasks.md                          # Tasks (Spec Kit)
+
+.claude/
+  commands/
+    speckit.constitution.md           # Create/update constitution
+    speckit.clarify.md                # Explore requirements
+    speckit.specify.md                # Create feature spec
+    speckit.analyze.md                # Validate spec (optional)
+    speckit.plan.md                   # Create implementation plan
+    speckit.tasks.md                  # Generate task breakdown
+    speckit.implement.md              # Execute tasks
+    speckit.checklist.md              # Verify acceptance criteria (optional)
 ```
 
-### Limitations of manual workflow
+### Full workflow
 
-- **No spec deltas** — when requirements change, diffs are only visible in git history, not as a structured requirements-level diff.
-- **No automation** — proposal generation, task decomposition, and archiving are manual.
-- **No built-in validation** — nothing enforces that specs are complete or consistent (Spec Kit's `/speckit.analyze` and `/speckit.checklist` commands address this).
-- **Scalability depends on discipline** — without tooling, the quality of specs is only as good as the team's commitment to writing them.
+```
+/speckit.constitution    → Create/update .specify/memory/constitution.md
+/speckit.clarify         → Explore requirements, surface ambiguities
+/speckit.specify         → Create spec.md (uses create-new-feature.sh)
+/speckit.analyze         → Validate spec completeness [optional]
+/speckit.plan            → Create plan.md (uses setup-plan.sh)
+/speckit.tasks           → Create tasks.md (marks active feature in CLAUDE.md)
+/speckit.implement       → Execute tasks, check off completed ones
+/speckit.checklist       → Verify acceptance criteria [optional]
+```
+
+---
+
+## Installing the Specify CLI
+
+The CLI is optional for daily development but required for:
+
+- Upgrading slash commands when Spec Kit releases new versions
+- Bootstrapping new projects
+- Running `specify check` to validate the toolchain
+
+### Prerequisites
+
+- Python 3.11+
+- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
+
+```bash
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install specify CLI (pin to stable release)
+# Check https://github.com/github/spec-kit/releases for the latest tag
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z
+
+# Verify installation
+specify check
+
+# See available commands
+specify --help
+```
+
+### Upgrading project files
+
+When Spec Kit releases new commands or templates:
+
+```bash
+# Back up your constitution first (it gets overwritten by --force)
+cp .specify/memory/constitution.md .specify/memory/constitution-backup.md
+
+# Upgrade (safe — never touches your specs/ directory)
+specify init --here --force --ai claude
+
+# Restore your customized constitution
+mv .specify/memory/constitution-backup.md .specify/memory/constitution.md
+```
+
+### What the CLI updates vs what stays safe
+
+| Updated by CLI          | Never touched by CLI                             |
+| ----------------------- | ------------------------------------------------ |
+| `.claude/commands/*.md` | `specs/**` (all your feature specs)              |
+| `.specify/scripts/`     | `src/**` (all your code)                         |
+| `.specify/templates/`   | `.specify/memory/constitution.md` ⚠️ (see above) |
+| `CLAUDE.md`             | `.git/` history                                  |
+
+---
 
 ## Alternative: OpenSpec
 
@@ -65,13 +142,6 @@ specs/
 - **Archive lifecycle** — merges change deltas into main specs
 - **MIT licensed, no API key** — open source, specs are just markdown
 
-### What it costs
-
-- **CLI dependency** — requires `npm install -g @fission-ai/openspec@latest`
-- **Change-driven model** — daily work revolves around temporary changes, not specs directly (see lifecycle comparison above)
-- **Learning curve** — team must learn CLI commands, schemas, and artifact conventions
-- **More moving parts** — `.openspec.yaml`, delta specs, archive step
-
 ### Migration path (if chosen)
 
 1. Install: `npm install -g @fission-ai/openspec@latest`
@@ -79,68 +149,18 @@ specs/
 3. Move existing `specs/<feature>/spec.md` content into `openspec/specs/<capability>/spec.md` format
 4. The `constitution.md` content maps to OpenSpec's configuration and project-level rules
 
-Existing research and decisions documented in Spec Kit specs remain valid.
+---
 
 ## Spec Kit vs OpenSpec: lifecycle model
 
-Both are spec-anchored, but they differ in how specs evolve:
-
-|                  | Spec Kit (manual)                              | OpenSpec                                                |
+|                  | Spec Kit (this project)                        | OpenSpec                                                |
 | ---------------- | ---------------------------------------------- | ------------------------------------------------------- |
 | Working artifact | The spec itself                                | A temporary "change"                                    |
 | How specs evolve | Direct edits to `specs/<name>/spec.md`         | Delta specs proposed in the change, merged on archive   |
 | Lifecycle        | Permanent — specs are the living documentation | Change → implement → archive → delta merge              |
 | Archive step     | Not needed — specs persist in place            | Required — moves change to `archive/` and merges deltas |
 
-**Spec Kit** is purely spec-anchored: you edit the specification, implement, and the spec reflects the current state. There is no intermediary artifact.
-
-**OpenSpec** introduces a change-driven layer on top of spec-anchored: daily work revolves around changes (temporary), not specs (permanent). Specs update as a side effect of archiving a completed change. This makes OpenSpec a hybrid between spec-anchored and spec-first in practice.
-
-The practical consequence: Spec Kit's workflow has no archive step because there is nothing to archive — the specification is always the living document. OpenSpec needs `/opsx:archive` to close the change lifecycle and sync deltas back to the main specs.
-
-## CLI note: both OpenSpec and Spec Kit have optional CLIs
-
-Both tools work without their CLIs — the AI agent slash commands (`/opsx:propose`, `/speckit.specify`, `/speckit.plan`, etc.) read and write markdown files directly. The CLIs add convenience, not core functionality:
-
-- **Scaffolding** — `openspec init` / `specify init` create directories, templates, and config.
-- **Inspection** — list, view, and validate specs outside the agent.
-- **Updates** — update skills/prompts when a new version is released.
-
-All of this can be done manually. This project already demonstrates it: Spec Kit's artifact workflow works with just markdown files and slash commands (`/speckit.specify`, `/speckit.implement`, etc.), no CLI installed.
-
-**The CLI is most valuable for new projects that don't have SDD structure yet** — it bootstraps the directory layout and configuration so you can start using slash commands immediately instead of creating everything by hand.
-
-### Installing the Spec Kit CLI (`specify`)
-
-Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/):
-
-```bash
-uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z
-```
-
-Initialize a new project:
-
-```bash
-specify init my-project --ai claude
-```
-
-### Installing the OpenSpec CLI
-
-```bash
-npm install -g @fission-ai/openspec@latest
-openspec init
-```
-
-### Quick comparison
-
-|                | OpenSpec                       | Spec Kit (GitHub)                           |
-| -------------- | ------------------------------ | ------------------------------------------- |
-| Runtime        | npm (Node)                     | uv (Python 3.11+)                           |
-| CLI            | `openspec`                     | `specify`                                   |
-| Slash commands | `/opsx:propose`, `/opsx:apply` | `/speckit.specify`, `/speckit.plan`         |
-| Spec directory | `openspec/changes/<name>/`     | `specs/` (manual) / `.specify/specs/` (CLI) |
-| Agent support  | Claude Code, Cursor, etc.      | 30+ agents                                  |
-| Extras         | Custom schemas, profiles       | Extensions, presets, auto Git branching     |
+---
 
 ## Tools evaluated and discarded
 

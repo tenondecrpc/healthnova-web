@@ -1,12 +1,35 @@
 # Spec — Folder Structure
 
-## Status: done
+**Feature branch:** `003-folder-structure`
+**Status:** `done`
+
+---
 
 ## Summary
 
 Define the folder structure for HealthNova Web using a hybrid approach: Atomic Design for the component layer, feature-based grouping for domain logic, and Next.js App Router conventions for routing.
 
+---
+
+## User Stories
+
+### US-1: Organized Codebase
+
+**As a** team member,
+**I want to** have a predictable and scalable folder structure,
+**So that** I know exactly where to find and place components, hooks, schemas, and routes as the application grows.
+
+**Acceptance Criteria:**
+
+- [x] `app/` is strictly for routing and layouts.
+- [x] `components/` follows a hybrid atomic/feature design.
+- [x] `schemas/` exists at the top level as the single source of truth.
+
+---
+
 ## Requirements
+
+### Functional
 
 - The structure SHALL separate routing (`app/`) from business logic and UI components.
 - The structure SHALL use shadcn's `components/ui/` as the atomic layer — no parallel atoms folder.
@@ -16,55 +39,7 @@ Define the folder structure for HealthNova Web using a hybrid approach: Atomic D
 - The structure SHALL use route groups in `app/` to separate auth and authenticated flows.
 - The structure SHALL colocate hooks, services, and stores as flat folders under `src/`.
 
-## Folder structure
-
-```
-src/
-  app/                                  # Routing layer (Next.js App Router)
-    (auth)/                             # Route group: unauthenticated pages
-      login/
-        page.tsx
-      register/
-        page.tsx
-      layout.tsx
-    (dashboard)/                        # Route group: authenticated pages
-      page.tsx                          # Dashboard home
-      patients/
-        page.tsx
-        [id]/
-          page.tsx
-      appointments/
-        page.tsx
-      settings/
-        page.tsx
-      layout.tsx                        # Sidebar + header layout
-    layout.tsx                          # Root layout (fonts, providers)
-    globals.css
-    not-found.tsx
-
-  components/                           # UI layer
-    ui/                                 # Atoms — shadcn primitives (button, input, card, etc.)
-    composed/                           # Shared molecules/organisms — reusable across features
-    auth/                               # Auth-specific components (login form, register form)
-    dashboard/                          # Dashboard-specific components (stats grid, overview)
-    patients/                           # Patient-specific components (patient card, vitals chart)
-    appointments/                       # Appointment-specific components
-
-  schemas/                              # Data contracts — Zod schemas (source of truth)
-
-  hooks/                                # Custom React hooks (useAuth, useMediaQuery, etc.)
-
-  services/                             # API layer — axios instances, endpoint functions
-
-  stores/                               # Client state — Zustand stores
-
-  lib/                                  # Utilities — helpers, config, constants
-    utils.ts                            # cn() helper (already exists)
-
-  i18n/                                 # Internationalization — next-intl messages and config
-
-  types/                                # Shared TypeScript types (derived or auxiliary)
-```
+---
 
 ## Decisions
 
@@ -88,9 +63,13 @@ At this project's scale, flat folders with descriptive filenames are simpler tha
 
 Although Next.js 16 allows colocating non-route files in `app/`, keeping `app/` routing-only makes the routing tree scannable. All UI lives in `components/`.
 
-## Acceptance criteria
+---
 
-- [ ] All folders created with a `.gitkeep` where empty
-- [ ] Existing files (`components/ui/button.tsx`, `lib/utils.ts`) remain in place
-- [ ] `components.json` aliases still resolve correctly
-- [ ] `npm run build` passes
+## Review & Acceptance Checklist
+
+- [x] All [NEEDS CLARIFICATION] markers resolved
+- [x] Requirements are testable and unambiguous
+- [x] Decisions reference constitution constraints
+- [x] No speculative or "might need" features included
+- [x] Security rules (constitution §4) addressed
+- [x] Test tasks included (constitution §6)
