@@ -6,5 +6,5 @@ function customRender(ui: ReactElement, options?: Omit<RenderOptions, "wrapper">
 }
 
 export { customRender as render };
-export { screen, within } from "@testing-library/react";
+export { screen, within, waitFor } from "@testing-library/react";
 export { default as userEvent } from "@testing-library/user-event";
