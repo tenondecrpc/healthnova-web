@@ -1,4 +1,25 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm view:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx @fission-ai/openspec --help)",
+      "Bash(npx @fission-ai/openspec)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+      "Bash(git branch:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker info:*)",
+      "Bash(docker port:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebSearch",
+      "mcp__plugin_claude-mem_mcp-search__get_observations"
+    ]
+  },
   "enabledPlugins": {
     "claude-mem@thedotmack": true
   }
