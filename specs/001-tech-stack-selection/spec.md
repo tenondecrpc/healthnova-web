@@ -1,12 +1,35 @@
 # Spec — Tech Stack Selection
 
-## Status: done
+**Feature branch:** `001-tech-stack-selection`
+**Status:** `done`
+
+---
 
 ## Summary
 
 Define and install the complete frontend technology stack for HealthNova, a medical dashboard consuming an external backend API with AWS Cognito authentication.
 
+---
+
+## User Stories
+
+### US-1: Developer setup
+
+**As a** developer,
+**I want to** have a modern, typing-safe, and performant tech stack already configured,
+**So that** I can start building features immediately without worrying about boilerplate or incompatible libraries.
+
+**Acceptance Criteria:**
+
+- [x] Next.js 16 installed with App Router
+- [x] React 19 + TypeScript + Tailwind v4 + shadcn/ui configured
+- [x] Auth, state management, forms, and charts dependencies installed
+
+---
+
 ## Requirements
+
+### Functional
 
 - The project SHALL use Next.js 16 with App Router as the application framework.
 - The project SHALL use React 19 with React Compiler for automatic optimization.
@@ -20,6 +43,12 @@ Define and install the complete frontend technology stack for HealthNova, a medi
 - The project SHALL use recharts v3 for health data visualization.
 - The project SHALL use next-intl v4 for internationalization with SSR support.
 - The project SHALL use axios for HTTP requests with Cognito JWT interceptors.
+
+### Non-functional
+
+- The feature SHALL comply with constitution §4 (security rules).
+
+---
 
 ## Decisions
 
@@ -45,30 +74,15 @@ next-intl is purpose-built for Next.js App Router with SSR support and locale-ba
 
 ### D6: React Compiler over manual memoization
 
-React Compiler (babel-plugin-react-compiler) handles memoization automatically. Manual useMemo/useCallback should only be used if profiling proves necessity.
+React Compiler handles memoization automatically. Manual useMemo/useCallback should only be used if profiling proves necessity.
 
-## Installed versions
+---
 
-| Library                     | Version  |
-| --------------------------- | -------- |
-| next                        | 16.2.1   |
-| react / react-dom           | 19.2.4   |
-| typescript                  | ^5       |
-| tailwindcss                 | ^4       |
-| shadcn                      | 4.1.0    |
-| aws-amplify                 | ^6.16.3  |
-| @aws-amplify/adapter-nextjs | ^1.7.2   |
-| @tanstack/react-query       | ^5.94.5  |
-| @tanstack/react-table       | ^8.21.3  |
-| zustand                     | ^5.0.12  |
-| react-hook-form             | ^7.71.2  |
-| zod                         | ^4.3.6   |
-| @hookform/resolvers         | ^5.2.2   |
-| recharts                    | ^3.8.0   |
-| next-intl                   | ^4.8.3   |
-| axios                       | ^1.13.6  |
-| date-fns                    | ^4.1.0   |
-| sonner                      | ^2.0.7   |
-| lucide-react                | ^0.577.0 |
-| prettier                    | ^3.8.1   |
-| babel-plugin-react-compiler | 1.0.0    |
+## Review & Acceptance Checklist
+
+- [x] All [NEEDS CLARIFICATION] markers resolved
+- [x] Requirements are testable and unambiguous
+- [x] Decisions reference constitution constraints
+- [x] No speculative or "might need" features included
+- [x] Security rules (constitution §4) addressed
+- [x] Test tasks included (constitution §6)

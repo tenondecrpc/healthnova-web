@@ -53,7 +53,8 @@
 ## 7. Spec Kit workflow
 
 - Every non-trivial feature must have a spec before implementation.
-- Specs live in `specs/<feature-name>/` with: `research.md`, `spec.md`, `plan.md`, `tasks.md`.
+- Specs live in `specs/<NNN>-feature-name/` with: `research.md`, `spec.md`, `plan.md`, `tasks.md`.
+- Feature directories use sequential numeric prefixes (001, 002, 003…) for ordering.
 - Decisions are documented in `spec.md` — no separate ADR files.
-- Workflow commands: `/speckit.clarify` → `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement` → `/speckit.security`.
+- Workflow commands: `/speckit.constitution` → `/speckit.clarify` → `/speckit.specify` → `/speckit.plan` → `/speckit.tasks` → `/speckit.implement`.
 - This constitution can only be amended by explicit team consensus.
